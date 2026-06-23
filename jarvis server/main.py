@@ -1,10 +1,12 @@
-import json
-from core.types import Message
+import asyncio
 
-class Main:
-    def __init__(self):
-        return
+from transport.server import Server
 
-    def recivePacket(self, message: dict):
-        _packet = Message.from_dict(message)
-        print(_packet.to_dict())
+
+async def main() -> None:
+    server = Server()
+    await server.run()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

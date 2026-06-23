@@ -1,16 +1,16 @@
 from dataclasses import dataclass
-from typing import Any, Dict, Literal
+from typing import Any, Dict
 
 
 @dataclass
 class Message:
     user_id: str
     device_id: str
-    type: Literal["input", "transcription", "tool_call", "tool_result", "final_answer", "event", "heartbeat"]
-    payload: Any
-    encoding: str
+    type: str # input, transcription, tool_call, final_answer, event, heartbeat, error
     request_id: str
     timestamp: int
+    payload: Any = None
+    encoding: str = "text" # text, wav, json
 
     def __post_init__(self) -> None:
         if not isinstance(self.user_id, str):
@@ -18,7 +18,7 @@ class Message:
         if not isinstance(self.device_id, str):
             raise TypeError("device_id must be a string")
         if not isinstance(self.type, str):
-            raise TypeError("type must be a type")
+            raise TypeError("type must be a string")
         if not isinstance(self.encoding, str):
             raise TypeError("encoding must be a string")
         if not isinstance(self.request_id, str):
@@ -43,10 +43,10 @@ class Message:
             user_id=data["user_id"],
             device_id=data["device_id"],
             type=data["type"],
-            payload=data.get("payload"),
-            encoding=data["encoding"],
             request_id=data["request_id"],
             timestamp=data["timestamp"],
+            payload=data.get("payload"),
+            encoding=data.get("encoding", "text"),
         )
 
     

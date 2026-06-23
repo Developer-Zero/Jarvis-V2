@@ -1,3 +1,5 @@
+// & "C:\Program Files\dotnet\dotnet.exe" run --project "C:\Users\Barnus\Desktop\Jarvis V2\clients\windows\JarvisClient" -- --host 192.168.1.28 --port 8765 --user barnus --device barnus-pc
+
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
