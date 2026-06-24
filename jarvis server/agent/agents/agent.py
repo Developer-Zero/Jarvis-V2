@@ -4,5 +4,5 @@ from models import Session, ConnectionManager
 
 class Agent(ABC):
     @abstractmethod
-    async def run(self, session: Session, connection_manager: ConnectionManager, memories: dict):
+    async def run(self, session: Session, connection_manager: ConnectionManager, memories: dict) -> str:
         pass

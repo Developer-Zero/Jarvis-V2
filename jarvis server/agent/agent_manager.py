@@ -1,6 +1,14 @@
 
 from models import ConnectionManager, Session
-from agent.agents import OpenAIJarvisDefault, OpenAISummaryAgent
+import agents
 
-def get_response(session: Session, connection_manager: ConnectionManager) -> str:
+agent = agents.OpenAIJarvisDefault()
+
+def run(session: Session, connection_manager: ConnectionManager) -> str:
+    # get memory context
+
+    agent.run(session, connection_manager)
+
+    # return tool calls or final answer
+
     pass
