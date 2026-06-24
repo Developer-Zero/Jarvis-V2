@@ -56,6 +56,7 @@ class Server:
                         reader=reader,
                         writer=writer,
                     )
+                    print(f"new connection added: {message.device_id}")
 
                 print(message.to_dict())
 

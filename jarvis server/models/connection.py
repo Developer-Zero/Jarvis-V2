@@ -19,6 +19,9 @@ class ConnectionManager:
     def get_connection(self, device_id: str) -> Connection | None: # Easier search
         return self.connections.get(device_id)
     
+    def get_connections(self, user_id: str) -> list[Connection] | None:
+        return [conn for conn in self.connections.values() if conn.user_id == user_id]
+    
     def remove_connection(self, writer: asyncio.StreamWriter) -> None: # Removes from only the writer
         for device_id, connection in self.connections.items():
             if connection.writer == writer:

@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 
 from agent.agents.agent import Agent
-from models import Session, ConnectionManager
+from models import Session, ConnectionManager, ChatMessage, AgentContext
 
 class OpenAIJarvisDefault(Agent):
-    async def run(self, session: Session, connection_manager: ConnectionManager, memories: dict = {}) -> str:
-        return ""
+    async def run(self, context: AgentContext) -> ChatMessage:
+        pass

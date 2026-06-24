@@ -1,8 +1,9 @@
 import base64
 import time
 
-from models import ConnectionManager, Message, SessionManager
+from models import ConnectionManager, Message, SessionManager, ChatMessage
 from speech.stt.openai_stt_agent import OpenAISTTAgent
+import agent.agent_manager
 
 stt_agent: OpenAISTTAgent | None = None # What agent to use for transcription
 
@@ -48,9 +49,7 @@ async def handle_message(message: Message, connection_manager: ConnectionManager
             )
 
         session = session_manager.get_session(message.user_id)
-        session.messages.append(input_text)
-        session.last_activity = int(time.time())
-        # call agent with return tool calls
+        return agent.agent_manager.run(session, connection_manager, input_text)
     elif message.type == "heartbeat":
         return Message(
             user_id=message.user_id,

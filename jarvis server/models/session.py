@@ -1,12 +1,14 @@
 from dataclasses import dataclass
 import time
 
+from models import ChatMessage
+
 
 
 @dataclass
 class Session:
     user_id: str
-    messages: list[str]
+    messages: list[ChatMessage]
     last_activity: int
     
     current_steps: int

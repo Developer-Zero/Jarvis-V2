@@ -12,20 +12,6 @@ class Message:
     payload: Any = None
     encoding: str = "text" # text, wav, json
 
-    def __post_init__(self) -> None:
-        if not isinstance(self.user_id, str):
-            raise TypeError("user_id must be a string")
-        if not isinstance(self.device_id, str):
-            raise TypeError("device_id must be a string")
-        if not isinstance(self.type, str):
-            raise TypeError("type must be a string")
-        if not isinstance(self.encoding, str):
-            raise TypeError("encoding must be a string")
-        if not isinstance(self.request_id, str):
-            raise TypeError("request_id must be a string")
-        if not isinstance(self.timestamp, int):
-            raise TypeError("timestamp must be an integer")
-
     def to_dict(self) -> Dict[str, Any]:
         return {
             "user_id": self.user_id,
