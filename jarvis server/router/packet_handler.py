@@ -1,71 +1,36 @@
-import base64
 import time
 
-from models import ConnectionManager, Message, SessionManager, ChatMessage
-from speech.stt.openai_stt_agent import OpenAISTTAgent
-import agent.agent_manager
+from models import ConnectionManager, Message, Session, ChatMessage
 
-stt_agent: OpenAISTTAgent | None = None # What agent to use for transcription
+from input import handle_input
 
-
-def get_stt_agent() -> OpenAISTTAgent:
-    global stt_agent
-    if stt_agent is None:
-        stt_agent = OpenAISTTAgent()
-    return stt_agent
-
-async def packet_handler(message: Message, connection_manager: ConnectionManager, session_manager: SessionManager) -> None:
-    output = await handle_message(message, connection_manager, session_manager)
+async def packet_handler(message: Message, session: Session, connection_manager: ConnectionManager) -> None:
+    output = await handle_message(message, session, connection_manager)
     if output is not None:
-        await connection_manager.send_packet(message.device_id, output)
-
-async def handle_message(message: Message, connection_manager: ConnectionManager, session_manager: SessionManager) -> Message | None:
-    if message.type == "input":
-        if message.encoding in ("text", "utf-8"):
-            input_text = message.payload
-        elif message.encoding == "wav":
-            try:
-                wav = base64.b64decode(message.payload)
-            except Exception as exc:
-                return Message(
-                    user_id=message.user_id,
-                    device_id=message.device_id,
-                    type="error",
-                    payload=f"Failed to decode base64 WAV: {exc}",
-                    encoding="text",
-                    request_id=message.request_id,
-                    timestamp=int(time.time())
-                )
-            input_text = await get_stt_agent().transcribe_wav(wav)
-        else:
-            return Message(
-                user_id=message.user_id,
-                device_id=message.device_id,
-                type="error",
-                payload=f"Unsupported input encoding: {message.encoding}",
-                encoding="text",
-                request_id=message.request_id,
-                timestamp=int(time.time())
-            )
-
-        session = session_manager.get_session(message.user_id)
-        return agent.agent_manager.run(session, connection_manager, input_text)
-    elif message.type == "heartbeat":
-        return Message(
-            user_id=message.user_id,
-            device_id=message.device_id,
-            type="heartbeat",
-            encoding="text",
+        response = Message(
+            device_id=output["device_id"] or message.device_id,
+            type=output["type"] or message.type,
+            payload=output["payload"] or None,
+            encoding=output["encoding"] or None,
             request_id=message.request_id,
-            timestamp=int(time.time())
+            timestamp=int(time.time()),
+            metadata=output["metadata"] or None,
         )
+        print(f"created responsefor message: {response.to_dict()}")
+        await connection_manager.send_packet(response)
     else:
-        return Message(
-            user_id=message.user_id,
-            device_id=message.device_id,
-            type="error",
-            payload=f"Unknown message type: {message.type}",
-            encoding="text",
-            request_id=message.request_id,
-            timestamp=int(time.time())
-        )
+        print(f"no response generated for message: {message.request_id}")
+
+async def handle_message(message: Message, session: Session, connection_manager: ConnectionManager) -> dict | None:
+    if message.type == "input":
+        return await handle_input(message)
+    elif message.type == "heartbeat":
+        print(f"received heartbeat from device {message.device_id}")
+        return {"type": "heartbeat"}
+    else:
+        print(f"unknown message type: {message.type}")
+        return {
+            "type": "error", 
+            "payload": f"Unknown message type: {message.type}", 
+            "encoding": "text",
+        }

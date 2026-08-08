@@ -1,36 +1,33 @@
 from dataclasses import dataclass
 import time
+import asyncio
 
-from models import ChatMessage
+from models import ChatMessage, ToolCall
 
 
 
 @dataclass
 class Session:
-    user_id: str
     messages: list[ChatMessage]
+
     last_activity: int
+    active: bool
     
     current_steps: int
-    current_tool_calls: list[dict] | None = None
+    current_tool_calls: list[ToolCall] | None = None
 
+    async def session_canceller(self):
+        while self.active:
+            await asyncio.sleep(60)
 
-@dataclass
-class SessionManager:
-    sessions: dict[str, Session]
+            if int(time.time()) - self.last_activity > 5 * 60 * 60:
+                self.active = False
+                self.reset()
 
-    def get_session(self, user_id: str) -> Session | None:
-        if user_id in self.sessions:
-            return self.sessions.get(user_id)
-        else:
-            session = Session(user_id=user_id, messages=[], current_steps=0, last_activity=int(time.time()))
-            self.sessions[user_id] = session
-            return session
-
-    def remove_session(self, user_id: str) -> None:
-        if user_id in self.sessions:
-            del self.sessions[user_id]
-
-
+    def reset(self):
+        self.messages = []
+        self.last_activity = 0
+        self.current_steps = 0
+        self.current_tool_calls = []
 
 
