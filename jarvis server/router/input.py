@@ -2,7 +2,7 @@ import base64
 import time
 import asyncio
 
-from models import Session, ConnectionManager, Message
+from models import Session, ConnectionManager, Message, ChatMessage
 from speech.stt.openai_stt_agent import OpenAISTTAgent
 import agent.agent_manager
 
@@ -32,5 +32,7 @@ async def handle_input(message: Message, session: Session, connection_manager: C
             "payload": f"Unsupported input encoding: {message.encoding}", 
             "encoding": "text",
         }
-    asyncio.create_task(agent.agent_manager.run(session, connection_manager, input_text, message.device_id))
-    return {"type": "input"}
+    session.messages.append(ChatMessage(role="user", content=input_text, timestamp=int(time.time())))
+    session.last_activity = int(time.time())
+    print(f"updated session")
+    asyncio.create_task(agent.agent_manager.run(session, connection_manager, message.device_id))

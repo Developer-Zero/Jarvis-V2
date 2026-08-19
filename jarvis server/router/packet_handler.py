@@ -1,8 +1,9 @@
 import time
+import uuid
 
-from models import ConnectionManager, Message, Session, ChatMessage
+from models import ConnectionManager, Message, Session
 
-from input import handle_input
+from router import handle_input, handle_tool_call
 
 async def packet_handler(message: Message, session: Session, connection_manager: ConnectionManager) -> None:
     output = await handle_message(message, session, connection_manager)
@@ -16,14 +17,18 @@ async def packet_handler(message: Message, session: Session, connection_manager:
             timestamp=int(time.time()),
             metadata=output["metadata"] or None,
         )
-        print(f"created responsefor message: {response.to_dict()}")
+        print(f"created response for message: {response.to_dict()}")
         await connection_manager.send_packet(response)
     else:
-        print(f"no response generated for message: {message.request_id}")
+        print(f"no instant response generated for message: {message.request_id}")
 
 async def handle_message(message: Message, session: Session, connection_manager: ConnectionManager) -> dict | None:
     if message.type == "input":
-        return await handle_input(message)
+        await handle_input(message)
+        return None
+    elif message.type == "tool_call":
+        await handle_tool_call(message, session, connection_manager)
+        return None
     elif message.type == "heartbeat":
         print(f"received heartbeat from device {message.device_id}")
         return {"type": "heartbeat"}

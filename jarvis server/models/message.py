@@ -5,7 +5,7 @@ from typing import Any, Dict
 @dataclass
 class Message:
     device_id: str
-    type: str # hello, input, transcription, tool_call, final_answer, event, heartbeat, error
+    type: str # hello, input, tool_call, final_answer, event, heartbeat, error
     request_id: str
     timestamp: int
     payload: Any

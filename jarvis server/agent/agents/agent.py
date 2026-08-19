@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from models import Session, ConnectionManager, ChatMessage, AgentContext
+from models import ChatMessage, AgentContext
 
 class Agent(ABC):
     @abstractmethod

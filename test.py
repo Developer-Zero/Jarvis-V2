@@ -1,3 +1,4 @@
-import time
+import uuid
 
-print(time.time())
+print(uuid.uuid1())
+print(uuid.uuid4())

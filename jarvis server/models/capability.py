@@ -36,6 +36,8 @@ class Capability:
     description: str
     parameters: list[Parameter]
 
+    requires_online: bool = True
+
     def to_dict(self) -> dict:
         return {
             "name": self.name,
@@ -43,6 +45,7 @@ class Capability:
             "parameters": [
                 parameter.to_dict() for parameter in self.parameters
             ],
+            "requires_online": self.requires_online,
         }
 
     @classmethod
@@ -53,4 +56,5 @@ class Capability:
             parameters=[
                 Parameter.from_dict(parameter) for parameter in data["parameters"]
             ],
+            requires_online=data.get("requires_online", True),
         )
