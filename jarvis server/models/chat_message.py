@@ -1,18 +1,17 @@
 from dataclasses import dataclass
 from typing import Any
 
-from models import ToolCall, ToolResult
+from models.tool_call import ToolCall, ToolResult
 
 
 @dataclass
 class ChatMessage:
     role: str
+    timestamp: int
 
     text: str | None = None
     tool_calls: list[ToolCall] | None = None
     tool_result: ToolResult | None = None
-
-    timestamp: int
 
     def to_dict(self) -> dict[str, Any]:
         return {

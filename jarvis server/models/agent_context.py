@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
-from models import ChatMessage, Capability
+from models.chat_message import ChatMessage
+from models.capability import Capability
 
 from typing import Dict
 

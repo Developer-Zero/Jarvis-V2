@@ -32,7 +32,7 @@ async def handle_input(message: Message, session: Session, connection_manager: C
             "payload": f"Unsupported input encoding: {message.encoding}", 
             "encoding": "text",
         }
-    session.messages.append(ChatMessage(role="user", content=input_text, timestamp=int(time.time())))
+    session.messages.append(ChatMessage(role="user", text=input_text, timestamp=int(time.time())))
     session.last_activity = int(time.time())
     print(f"updated session")
     asyncio.create_task(agent.agent_manager.run(session, connection_manager, message.device_id))

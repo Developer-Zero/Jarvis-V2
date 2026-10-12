@@ -17,10 +17,10 @@ async def handle_tool_call(message: Message, session: Session, connection_manage
 
     if session.current_tool_call < len(session.current_tool_calls):
         print(f"recived tool result, sending next tool call: {session.current_tool_calls[session.current_tool_call].to_dict()}")
-        await connection_manager.send_message(Message(
+        await connection_manager.send_packet(Message(
             device_id=message.device_id,
             type="tool_call",
-            request_id=uuid.uuid4(),
+            request_id=str(uuid.uuid4()),
             timestamp=int(time.time()),
             payload=session.current_tool_calls[session.current_tool_call].to_dict(),
             encoding="json",

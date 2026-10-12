@@ -1,14 +1,15 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import time
 import asyncio
 
-from models import ChatMessage, ToolCall, ToolResult
+from models.chat_message import ChatMessage
+from models.tool_call import ToolCall, ToolResult
 
 
 
 @dataclass
 class Session:
-    messages: list[ChatMessage] = []
+    messages: list[ChatMessage] = field(default_factory=list)
 
     last_activity: int = 0
     active: bool = False
